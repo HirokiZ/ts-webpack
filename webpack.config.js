@@ -19,6 +19,10 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     //打包后文件的文件配置
     filename: "bundle.js",
+    //告诉webpack,打包后bundle.js不使用箭头函数
+    environment:{
+      arrowFunction:false
+    }
   },
   //指定webpack打宝石要使用的模块
   module: {
@@ -28,7 +32,34 @@ module.exports = {
         //规则生效文件,匹配以ts结尾的文件
         test: /\.ts$/,
         //要使用的loader
-        use: "ts-loader",
+        use: [
+          //配置babel
+          {
+            //指定加载器
+            loader: "babel-loader",
+            //设置babel
+            options: {
+              //设置预定义环境
+              presets: [
+                [
+                //指定环境插件
+                "@babel/preset-env",
+                {
+                  //配置信息
+                  //要兼容的目标浏览器
+                  "targets": {
+                    "chrome": "88",
+                    "ie":"11"
+                  },
+                  //指定corejs的版本
+                  "corejs": "3",
+                  //使用corejs的方式
+                  "useBuiltIns": "usage", //按需加载
+                }]],
+            },
+          },
+          "ts-loader",
+        ],
         //要排除的文件
         exclude: /node-modules/,
       },
@@ -43,7 +74,7 @@ module.exports = {
     }), //自动生成html,并引入资源，可以自己配置
   ],
   //设置引用模块
-  resolve:{
-      extensions:['.ts','.js']
-  }
+  resolve: {
+    extensions: [".ts", ".js"],
+  },
 };
